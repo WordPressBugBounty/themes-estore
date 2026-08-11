@@ -83,6 +83,9 @@ If you want the theme to be translated into your language, feel free to contribu
 /**********************************************************/
 
 == Changelog ==
+= Version 1.6.12 - 2026-08-10 =
+* Fix - Fatal error when category term link returns WP_Error.
+
 = Version 1.6.11 - 2025-11-11 =
 * Update - WooCommerce template compatibility.
 
