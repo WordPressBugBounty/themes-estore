@@ -88,6 +88,17 @@ class estore_posts_grid extends WP_Widget {
 	}
 
 	function update( $new_instance, $old_instance ) {
+		$new_instance = wp_parse_args(
+			(array) $new_instance,
+			array_fill_keys(
+				array(
+					'title', 'subtitle', 'category', 'post_number', 'cat_image_link', 'cat_image_url',
+					'align'
+				),
+				''
+			)
+		);
+
 		$instance = $old_instance;
 		$instance[ 'title' ]          = sanitize_text_field( $new_instance[ 'title' ] );
 		if ( current_user_can('unfiltered_html') )
@@ -138,20 +149,27 @@ class estore_posts_grid extends WP_Widget {
 			$cat_image_link = icl_t( 'eStore', 'TG: Category Grid Image Link'. $this->id, $cat_image_link );
 		}
 
+		$category_link = ! empty( $category ) ? get_term_link( (int) $category, 'category' ) : '';
+		if ( is_wp_error( $category_link ) ) {
+			$category_link = '';
+		}
+
 		echo $before_widget; ?>
 		<div class="tg-container estore-cat-color_<?php echo $category; ?> <?php echo $align; ?>">
 			<div class="section-title-wrapper clearfix">
 				<div class="section-title-block">
 					<?php if ( !empty( $title ) ) { ?>
-						<h3 class="page-title"><a href="<?php echo esc_url( get_term_link( $category ) ); ?>"><?php echo esc_html( $title ); ?></a></h3>
+						<h3 class="page-title"><?php if ( $category_link ) : ?><a href="<?php echo esc_url( $category_link ); ?>"><?php endif; ?><?php echo esc_html( $title ); ?><?php if ( $category_link ) : ?></a><?php endif; ?></h3>
 					<?php }
 					if ( !empty( $subtitle ) ) { ?>
 						<h4 class="page-sub-title"><?php echo esc_textarea( $subtitle );?></h4>
 					<?php } ?>
 				</div>
+				<?php if ( $category_link ) : ?>
 				<div class="sorting-form-wrapper">
-					<a href="<?php echo esc_url( get_term_link( $category ) ); ?>"><?php esc_html_e( 'View all', 'estore' ); ?></a>
+					<a href="<?php echo esc_url( $category_link ); ?>"><?php esc_html_e( 'View all', 'estore' ); ?></a>
 				</div>
+				<?php endif; ?>
 			</div>
 			<div class="collection-block-wrapper tg-column-wrapper clearfix">
 				<div class="tg-column-4 collection-block">
@@ -182,7 +200,7 @@ class estore_posts_grid extends WP_Widget {
 									$image_url = wp_get_attachment_image_src($image_id,'estore-medium-image', false); ?>
 									<figure class="hot-img">
 										<a href="<?php the_permalink(); ?>">
-											<?php if($image_url[0]){ ?>
+											<?php if ( ! empty( $image_url[0] ) ){ ?>
 												<img src="<?php echo esc_url( $image_url[0] ); ?>" alt="<?php the_title_attribute(); ?>">
 											<?php } else { ?>
 												<img src="<?php echo esc_url( get_template_directory_uri() . '/images/placeholder-blog-380x250.jpg' ); ?>" alt="<?php the_title_attribute(); ?>">
@@ -210,7 +228,7 @@ class estore_posts_grid extends WP_Widget {
 							$image_url = wp_get_attachment_image_src($image_id,'estore-product-grid', false); ?>
 							<figure class="product-list-img">
 								<a href="<?php the_permalink(); ?>">
-									<?php if($image_url[0]){ ?>
+									<?php if ( ! empty( $image_url[0] ) ){ ?>
 										<img src="<?php echo esc_url( $image_url[0] ); ?>" alt="<?php the_title_attribute(); ?>">
 									<?php } else { ?>
 										<img src="<?php echo esc_url( get_template_directory_uri() . '/images/placeholder-blog.jpg' ); ?>" alt="<?php the_title_attribute(); ?>" width="75" height="75">
